@@ -4,10 +4,13 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
 local LocalPlayer = Players.LocalPlayer
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local isMobile = UserInputService.TouchEnabled and not UserInputService.MouseEnabled
+if not LocalPlayer then return end
 
--- Remove an existing copy
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local isMobile = UserInputService.TouchEnabled
+	and not UserInputService.MouseEnabled
+
+-- Remove old GUI
 local oldGui = PlayerGui:FindFirstChild("ThunderModzHub")
 if oldGui then
 	oldGui:Destroy()
@@ -17,577 +20,288 @@ end
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ThunderModzHub"
 screenGui.ResetOnSpawn = false
-screenGui.IgnoreGuiInset = true
-screenGui.DisplayOrder = 999999
-screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+screenGui.IgnoreGuiInset = false
+screenGui.DisplayOrder = 999
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Enabled = true
 screenGui.Parent = PlayerGui
 
 -- Main frame
-local baseSize = isMobile
-	and UDim2.new(0, 300, 0, 370)
-	or UDim2.new(0, 340, 0, 400)
-
-local basePos = UDim2.new(
-	0.5, isMobile and -150 or -170,
-	0.5, isMobile and -185 or -200
-)
+local width = isMobile and 300 or 340
+local height = isMobile and 390 or 430
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 0, 0, 0)
-mainFrame.Position = basePos
-mainFrame.BackgroundColor3 = Color3.fromRGB(5, 12, 25)
-mainFrame.BackgroundTransparency = 0.1
+mainFrame.Size = UDim2.fromOffset(width, height)
+mainFrame.Position = UDim2.new(0.5, -width / 2, 0.5, -height / 2)
+mainFrame.BackgroundColor3 = Color3.fromRGB(5, 15, 35)
 mainFrame.BorderSizePixel = 0
-mainFrame.ClipsDescendants = true
-mainFrame.ZIndex = 100
+mainFrame.Visible = true
 mainFrame.Parent = screenGui
 
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 18)
-mainCorner.Parent = mainFrame
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 16)
 
 local mainStroke = Instance.new("UIStroke")
 mainStroke.Color = Color3.fromRGB(40, 140, 255)
-mainStroke.Transparency = 0.3
 mainStroke.Thickness = 1.5
 mainStroke.Parent = mainFrame
 
-local bgGradient = Instance.new("UIGradient")
-bgGradient.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(5, 20, 50)),
-	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(5, 12, 35)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 35, 65))
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(5, 25, 55)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(5, 10, 25))
 })
-bgGradient.Rotation = 135
-bgGradient.Parent = mainFrame
+gradient.Rotation = 135
+gradient.Parent = mainFrame
 
--- Top glow
-local glowFrame = Instance.new("Frame")
-glowFrame.Size = UDim2.new(1, 0, 0, 3)
-glowFrame.BackgroundColor3 = Color3.fromRGB(40, 140, 255)
-glowFrame.BorderSizePixel = 0
-glowFrame.ZIndex = 105
-glowFrame.Parent = mainFrame
-
-local glowGrad = Instance.new("UIGradient")
-glowGrad.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 80, 255)),
-	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(80, 190, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 80, 255))
-})
-glowGrad.Parent = glowFrame
-
--- Top bar
+-- Header
 local topBar = Instance.new("Frame")
 topBar.Name = "TopBar"
 topBar.Size = UDim2.new(1, 0, 0, 55)
-topBar.Position = UDim2.new(0, 0, 0, 3)
 topBar.BackgroundTransparency = 1
-topBar.ZIndex = 110
+topBar.Active = true
 topBar.Parent = mainFrame
 
--- Logo
-local logoContainer = Instance.new("Frame")
-logoContainer.Size = UDim2.new(0, 36, 0, 36)
-logoContainer.Position = UDim2.new(0, 14, 0.5, -18)
-logoContainer.BackgroundColor3 = Color3.fromRGB(30, 110, 220)
-logoContainer.BorderSizePixel = 0
-logoContainer.ZIndex = 111
-logoContainer.Parent = topBar
+local logo = Instance.new("TextLabel")
+logo.Size = UDim2.fromOffset(36, 36)
+logo.Position = UDim2.fromOffset(12, 9)
+logo.BackgroundColor3 = Color3.fromRGB(20, 100, 210)
+logo.Text = "T"
+logo.TextColor3 = Color3.new(1, 1, 1)
+logo.TextSize = 23
+logo.Font = Enum.Font.GothamBold
+logo.Parent = topBar
+Instance.new("UICorner", logo).CornerRadius = UDim.new(0, 8)
 
-local logoCorner = Instance.new("UICorner")
-logoCorner.CornerRadius = UDim.new(0, 8)
-logoCorner.Parent = logoContainer
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -105, 0, 23)
+title.Position = UDim2.fromOffset(57, 7)
+title.BackgroundTransparency = 1
+title.Text = "THUNDERMODZ"
+title.TextColor3 = Color3.fromRGB(150, 210, 255)
+title.TextSize = isMobile and 14 or 16
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = topBar
 
-local logoGrad = Instance.new("UIGradient")
-logoGrad.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 170, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 60, 180))
-})
-logoGrad.Rotation = 135
-logoGrad.Parent = logoContainer
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.new(1, -105, 0, 17)
+subtitle.Position = UDim2.fromOffset(57, 29)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "Trade Controller"
+subtitle.TextColor3 = Color3.fromRGB(100, 160, 210)
+subtitle.TextSize = 11
+subtitle.Font = Enum.Font.Gotham
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+subtitle.Parent = topBar
 
-local logoLabel = Instance.new("TextLabel")
-logoLabel.Size = UDim2.new(1, 0, 1, 0)
-logoLabel.BackgroundTransparency = 1
-logoLabel.Text = "T"
-logoLabel.TextColor3 = Color3.new(1, 1, 1)
-logoLabel.TextScaled = true
-logoLabel.Font = Enum.Font.GothamBold
-logoLabel.ZIndex = 112
-logoLabel.Parent = logoContainer
-
--- Title
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(0, 140, 0, 22)
-titleLabel.Position = UDim2.new(0, 58, 0, 8)
-titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "THUNDERMODZ"
-titleLabel.TextColor3 = Color3.fromRGB(150, 210, 255)
-titleLabel.TextSize = isMobile and 14 or 15
-titleLabel.Font = Enum.Font.GothamBold
-titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-titleLabel.ZIndex = 111
-titleLabel.Parent = topBar
-
-local titleGrad = Instance.new("UIGradient")
-titleGrad.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(180, 230, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 140, 255))
-})
-titleGrad.Parent = titleLabel
-
-local subtitleLabel = Instance.new("TextLabel")
-subtitleLabel.Size = UDim2.new(0, 170, 0, 16)
-subtitleLabel.Position = UDim2.new(0, 58, 0, 30)
-subtitleLabel.BackgroundTransparency = 1
-subtitleLabel.Text = "Trade Controller"
-subtitleLabel.TextColor3 = Color3.fromRGB(100, 160, 210)
-subtitleLabel.TextSize = isMobile and 10 or 11
-subtitleLabel.Font = Enum.Font.Gotham
-subtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-subtitleLabel.ZIndex = 111
-subtitleLabel.Parent = topBar
-
--- Minimize button
 local minimizeBtn = Instance.new("TextButton")
-minimizeBtn.Size = UDim2.new(0, 28, 0, 28)
-minimizeBtn.Position = UDim2.new(1, -42, 0.5, -14)
+minimizeBtn.Size = UDim2.fromOffset(30, 30)
+minimizeBtn.Position = UDim2.new(1, -40, 0, 12)
 minimizeBtn.BackgroundColor3 = Color3.fromRGB(15, 50, 90)
 minimizeBtn.Text = "−"
-minimizeBtn.TextColor3 = Color3.fromRGB(150, 210, 255)
-minimizeBtn.TextSize = 16
+minimizeBtn.TextColor3 = Color3.new(1, 1, 1)
+minimizeBtn.TextSize = 20
 minimizeBtn.Font = Enum.Font.GothamBold
-minimizeBtn.BorderSizePixel = 0
-minimizeBtn.ZIndex = 115
 minimizeBtn.Parent = topBar
-
-local minCorner = Instance.new("UICorner")
-minCorner.CornerRadius = UDim.new(0, 7)
-minCorner.Parent = minimizeBtn
+Instance.new("UICorner", minimizeBtn).CornerRadius = UDim.new(0, 7)
 
 -- Divider
 local divider = Instance.new("Frame")
-divider.Size = UDim2.new(1, -28, 0, 1)
-divider.Position = UDim2.new(0, 14, 0, 58)
-divider.BackgroundColor3 = Color3.fromRGB(30, 110, 220)
-divider.BackgroundTransparency = 0.5
+divider.Size = UDim2.new(1, -24, 0, 1)
+divider.Position = UDim2.new(0, 12, 0, 55)
+divider.BackgroundColor3 = Color3.fromRGB(40, 120, 220)
 divider.BorderSizePixel = 0
-divider.ZIndex = 105
 divider.Parent = mainFrame
 
-local divGrad = Instance.new("UIGradient")
-divGrad.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.new(0, 0, 0)),
-	ColorSequenceKeypoint.new(0.3, Color3.fromRGB(40, 140, 255)),
-	ColorSequenceKeypoint.new(0.7, Color3.fromRGB(40, 140, 255)),
-	ColorSequenceKeypoint.new(1, Color3.new(0, 0, 0))
-})
-divGrad.Parent = divider
-
 -- Content
-local contentFrame = Instance.new("Frame")
-contentFrame.Name = "Content"
-contentFrame.Size = UDim2.new(1, 0, 1, -60)
-contentFrame.Position = UDim2.new(0, 0, 0, 60)
-contentFrame.BackgroundTransparency = 1
-contentFrame.ZIndex = 105
-contentFrame.Parent = mainFrame
+local content = Instance.new("Frame")
+content.Name = "Content"
+content.Size = UDim2.new(1, -24, 1, -75)
+content.Position = UDim2.fromOffset(12, 65)
+content.BackgroundTransparency = 1
+content.Parent = mainFrame
 
-local contentLayout = Instance.new("UIListLayout")
-contentLayout.Padding = UDim.new(0, 10)
-contentLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-contentLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-contentLayout.Parent = contentFrame
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 9)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+layout.Parent = content
 
-local contentPadding = Instance.new("UIPadding")
-contentPadding.PaddingTop = UDim.new(0, 14)
-contentPadding.PaddingLeft = UDim.new(0, 14)
-contentPadding.PaddingRight = UDim.new(0, 14)
-contentPadding.Parent = contentFrame
-
--- Toggle buttons
+-- Button creator
 local function createToggleButton(name, icon, order)
-	local btnHeight = isMobile and 52 or 58
-
 	local container = Instance.new("Frame")
-	container.Name = name .. "Container"
-	container.Size = UDim2.new(1, 0, 0, btnHeight)
-	container.BackgroundColor3 = Color3.fromRGB(8, 20, 40)
-	container.BackgroundTransparency = 0.2
+	container.Name = "Button_" .. order
+	container.Size = UDim2.new(1, 0, 0, 52)
+	container.BackgroundColor3 = Color3.fromRGB(10, 30, 55)
 	container.BorderSizePixel = 0
 	container.LayoutOrder = order
-	container.ZIndex = 106
-	container.Parent = contentFrame
+	container.Parent = content
 
-	local containerCorner = Instance.new("UICorner")
-	containerCorner.CornerRadius = UDim.new(0, 12)
-	containerCorner.Parent = container
+	Instance.new("UICorner", container).CornerRadius = UDim.new(0, 10)
 
-	local containerStroke = Instance.new("UIStroke")
-	containerStroke.Color = Color3.fromRGB(30, 110, 220)
-	containerStroke.Transparency = 0.6
-	containerStroke.Thickness = 1
-	containerStroke.Parent = container
-
-	local containerGrad = Instance.new("UIGradient")
-	containerGrad.Color = ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromRGB(10, 35, 65)),
-		ColorSequenceKeypoint.new(1, Color3.fromRGB(5, 18, 38))
-	})
-	containerGrad.Rotation = 135
-	containerGrad.Parent = container
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = Color3.fromRGB(30, 100, 180)
+	stroke.Transparency = 0.4
+	stroke.Parent = container
 
 	local iconLabel = Instance.new("TextLabel")
-	iconLabel.Size = UDim2.new(0, 32, 0, 32)
-	iconLabel.Position = UDim2.new(0, 12, 0.5, -16)
-	iconLabel.BackgroundColor3 = Color3.fromRGB(20, 80, 160)
+	iconLabel.Size = UDim2.fromOffset(32, 32)
+	iconLabel.Position = UDim2.new(0, 10, 0.5, -16)
+	iconLabel.BackgroundColor3 = Color3.fromRGB(20, 80, 150)
 	iconLabel.Text = icon
-	iconLabel.TextColor3 = Color3.fromRGB(150, 210, 255)
-	iconLabel.TextScaled = true
+	iconLabel.TextColor3 = Color3.fromRGB(170, 220, 255)
+	iconLabel.TextSize = 19
 	iconLabel.Font = Enum.Font.GothamBold
-	iconLabel.BorderSizePixel = 0
-	iconLabel.ZIndex = 107
 	iconLabel.Parent = container
-
-	local iconCorner = Instance.new("UICorner")
-	iconCorner.CornerRadius = UDim.new(0, 8)
-	iconCorner.Parent = iconLabel
+	Instance.new("UICorner", iconLabel).CornerRadius = UDim.new(0, 7)
 
 	local nameLabel = Instance.new("TextLabel")
-	nameLabel.Name = "ButtonName"
-	nameLabel.Size = UDim2.new(1, -110, 0, 20)
-	nameLabel.Position = UDim2.new(0, 54, 0.5, -14)
+	nameLabel.Size = UDim2.new(1, -110, 1, 0)
+	nameLabel.Position = UDim2.fromOffset(52, 0)
 	nameLabel.BackgroundTransparency = 1
 	nameLabel.Text = name
-	nameLabel.TextColor3 = Color3.fromRGB(200, 230, 255)
-	nameLabel.TextSize = isMobile and 12 or 13
+	nameLabel.TextColor3 = Color3.fromRGB(210, 230, 255)
+	nameLabel.TextSize = isMobile and 11 or 13
 	nameLabel.Font = Enum.Font.GothamBold
 	nameLabel.TextXAlignment = Enum.TextXAlignment.Left
-	nameLabel.ZIndex = 107
+	nameLabel.TextWrapped = true
 	nameLabel.Parent = container
 
-	local statusLabel = Instance.new("TextLabel")
-	statusLabel.Name = "StatusLabel"
-	statusLabel.Size = UDim2.new(1, -110, 0, 14)
-	statusLabel.Position = UDim2.new(0, 54, 0.5, 2)
-	statusLabel.BackgroundTransparency = 1
-	statusLabel.Text = "Inactive"
-	statusLabel.TextColor3 = Color3.fromRGB(80, 130, 180)
-	statusLabel.TextSize = isMobile and 9 or 10
-	statusLabel.Font = Enum.Font.Gotham
-	statusLabel.TextXAlignment = Enum.TextXAlignment.Left
-	statusLabel.ZIndex = 107
-	statusLabel.Parent = container
+	local track = Instance.new("Frame")
+	track.Size = UDim2.fromOffset(42, 23)
+	track.Position = UDim2.new(1, -52, 0.5, -11)
+	track.BackgroundColor3 = Color3.fromRGB(15, 35, 60)
+	track.Parent = container
+	Instance.new("UICorner", track).CornerRadius = UDim.new(1, 0)
 
-	local toggleTrack = Instance.new("Frame")
-	toggleTrack.Size = UDim2.new(0, 44, 0, 24)
-	toggleTrack.Position = UDim2.new(1, -56, 0.5, -12)
-	toggleTrack.BackgroundColor3 = Color3.fromRGB(10, 35, 70)
-	toggleTrack.BorderSizePixel = 0
-	toggleTrack.ZIndex = 107
-	toggleTrack.Parent = container
+	local knob = Instance.new("Frame")
+	knob.Size = UDim2.fromOffset(17, 17)
+	knob.Position = UDim2.new(0, 3, 0.5, -8)
+	knob.BackgroundColor3 = Color3.fromRGB(130, 180, 220)
+	knob.Parent = track
+	Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
 
-	local trackCorner = Instance.new("UICorner")
-	trackCorner.CornerRadius = UDim.new(1, 0)
-	trackCorner.Parent = toggleTrack
+	local clickButton = Instance.new("TextButton")
+	clickButton.Size = UDim2.fromScale(1, 1)
+	clickButton.BackgroundTransparency = 1
+	clickButton.Text = ""
+	clickButton.Parent = container
 
-	local trackStroke = Instance.new("UIStroke")
-	trackStroke.Color = Color3.fromRGB(20, 90, 170)
-	trackStroke.Transparency = 0.3
-	trackStroke.Thickness = 1
-	trackStroke.Parent = toggleTrack
+	local enabled = false
 
-	local toggleKnob = Instance.new("Frame")
-	toggleKnob.Size = UDim2.new(0, 18, 0, 18)
-	toggleKnob.Position = UDim2.new(0, 3, 0.5, -9)
-	toggleKnob.BackgroundColor3 = Color3.fromRGB(100, 170, 230)
-	toggleKnob.BorderSizePixel = 0
-	toggleKnob.ZIndex = 108
-	toggleKnob.Parent = toggleTrack
+	clickButton.Activated:Connect(function()
+		enabled = not enabled
 
-	local knobCorner = Instance.new("UICorner")
-	knobCorner.CornerRadius = UDim.new(1, 0)
-	knobCorner.Parent = toggleKnob
+		TweenService:Create(knob, TweenInfo.new(0.2), {
+			Position = enabled
+				and UDim2.new(1, -20, 0.5, -8)
+				or UDim2.new(0, 3, 0.5, -8),
+			BackgroundColor3 = enabled
+				and Color3.fromRGB(200, 235, 255)
+				or Color3.fromRGB(130, 180, 220)
+		}):Play()
 
-	local clickBtn = Instance.new("TextButton")
-	clickBtn.Size = UDim2.new(1, 0, 1, 0)
-	clickBtn.BackgroundTransparency = 1
-	clickBtn.Text = ""
-	clickBtn.ZIndex = 110
-	clickBtn.Parent = container
+		TweenService:Create(track, TweenInfo.new(0.2), {
+			BackgroundColor3 = enabled
+				and Color3.fromRGB(20, 110, 220)
+				or Color3.fromRGB(15, 35, 60)
+		}):Play()
 
-	local isOn = false
-
-	local function animateToggle(state)
-		isOn = state
-
-		local knobPos = state
-			and UDim2.new(1, -21, 0.5, -9)
-			or UDim2.new(0, 3, 0.5, -9)
-
-		local trackColor = state
-			and Color3.fromRGB(20, 110, 220)
-			or Color3.fromRGB(10, 35, 70)
-
-		local knobColor = state
-			and Color3.fromRGB(160, 220, 255)
-			or Color3.fromRGB(100, 170, 230)
-
-		local strokeColor = state
+		stroke.Color = enabled
 			and Color3.fromRGB(50, 160, 255)
-			or Color3.fromRGB(20, 90, 170)
+			or Color3.fromRGB(30, 100, 180)
 
-		local statusColor = state
-			and Color3.fromRGB(130, 210, 255)
-			or Color3.fromRGB(80, 130, 180)
-
-		local iconBg = state
-			and Color3.fromRGB(30, 120, 220)
-			or Color3.fromRGB(20, 80, 160)
-
-		TweenService:Create(toggleKnob, TweenInfo.new(
-			0.25,
-			Enum.EasingStyle.Back,
-			Enum.EasingDirection.Out
-		), {
-			Position = knobPos,
-			BackgroundColor3 = knobColor
-		}):Play()
-
-		TweenService:Create(toggleTrack, TweenInfo.new(0.25), {
-			BackgroundColor3 = trackColor
-		}):Play()
-
-		TweenService:Create(trackStroke, TweenInfo.new(0.2), {
-			Color = strokeColor
-		}):Play()
-
-		TweenService:Create(containerStroke, TweenInfo.new(0.2), {
-			Color = state
-				and Color3.fromRGB(40, 140, 255)
-				or Color3.fromRGB(30, 110, 220),
-			Transparency = state and 0.2 or 0.6
-		}):Play()
-
-		TweenService:Create(iconLabel, TweenInfo.new(0.2), {
-			BackgroundColor3 = iconBg
-		}):Play()
-
-		statusLabel.Text = state and "Active" or "Inactive"
-
-		TweenService:Create(statusLabel, TweenInfo.new(0.2), {
-			TextColor3 = statusColor
-		}):Play()
-
-		TweenService:Create(container, TweenInfo.new(0.15), {
-			BackgroundTransparency = state and 0 or 0.2
-		}):Play()
-
-		print("[ThunderModz] " .. name .. " -> " .. (state and "ON" or "OFF"))
-	end
-
-	clickBtn.MouseButton1Click:Connect(function()
-		animateToggle(not isOn)
-	end)
-
-	clickBtn.MouseEnter:Connect(function()
-		TweenService:Create(container, TweenInfo.new(0.15), {
-			BackgroundTransparency = 0
-		}):Play()
-	end)
-
-	clickBtn.MouseLeave:Connect(function()
-		TweenService:Create(container, TweenInfo.new(0.15), {
-			BackgroundTransparency = isOn and 0 or 0.2
-		}):Play()
+		print("[ThunderModz] " .. name .. ": "
+			.. (enabled and "ON" or "OFF"))
 	end)
 end
 
+-- Four buttons
 createToggleButton("Freeze Trade", "❄", 1)
 createToggleButton("Auto Accept", "✓", 2)
 createToggleButton("Cancel Trade", "✕", 3)
+createToggleButton("GIVE ALL BEST ITEM", "★", 4)
 
 -- Footer
-local footerFrame = Instance.new("Frame")
-footerFrame.Size = UDim2.new(1, 0, 0, 50)
-footerFrame.BackgroundTransparency = 1
-footerFrame.LayoutOrder = 4
-footerFrame.ZIndex = 106
-footerFrame.Parent = contentFrame
-
-local madeByLabel = Instance.new("TextLabel")
-madeByLabel.Size = UDim2.new(1, 0, 0, 16)
-madeByLabel.Position = UDim2.new(0, 0, 0, 4)
-madeByLabel.BackgroundTransparency = 1
-madeByLabel.Text = "Made By ThunderModz"
-madeByLabel.TextColor3 = Color3.fromRGB(100, 180, 240)
-madeByLabel.TextSize = isMobile and 10 or 11
-madeByLabel.Font = Enum.Font.GothamBold
-madeByLabel.TextXAlignment = Enum.TextXAlignment.Center
-madeByLabel.ZIndex = 107
-madeByLabel.Parent = footerFrame
-
-local socLabel = Instance.new("TextLabel")
-socLabel.Size = UDim2.new(1, 0, 0, 14)
-socLabel.Position = UDim2.new(0, 0, 0, 22)
-socLabel.BackgroundTransparency = 1
-socLabel.Text = "TT: shinichiscripts"
-socLabel.TextColor3 = Color3.fromRGB(70, 120, 180)
-socLabel.TextSize = isMobile and 9 or 10
-socLabel.Font = Enum.Font.Gotham
-socLabel.TextXAlignment = Enum.TextXAlignment.Center
-socLabel.ZIndex = 107
-socLabel.Parent = footerFrame
+local footer = Instance.new("TextLabel")
+footer.Size = UDim2.new(1, 0, 0, 18)
+footer.Position = UDim2.new(0, 0, 1, -20)
+footer.BackgroundTransparency = 1
+footer.Text = "Made By ThunderModz"
+footer.TextColor3 = Color3.fromRGB(100, 180, 240)
+footer.TextSize = 10
+footer.Font = Enum.Font.GothamBold
+footer.Parent = mainFrame
 
 -- Minimize
 local minimized = false
-local fullSize = baseSize
-local miniSize = UDim2.new(0, fullSize.X.Offset, 0, 58)
+local fullSize = UDim2.fromOffset(width, height)
+local miniSize = UDim2.fromOffset(width, 55)
 
-minimizeBtn.MouseButton1Click:Connect(function()
+minimizeBtn.Activated:Connect(function()
 	minimized = not minimized
+	content.Visible = not minimized
+	divider.Visible = not minimized
+	footer.Visible = not minimized
+	minimizeBtn.Text = minimized and "+" or "−"
 
-	if minimized then
-		minimizeBtn.Text = "+"
-		contentFrame.Visible = false
-		divider.Visible = false
-
-		TweenService:Create(mainFrame, TweenInfo.new(
-			0.3,
-			Enum.EasingStyle.Quad,
-			Enum.EasingDirection.Out
-		), {
-			Size = miniSize
-		}):Play()
-	else
-		minimizeBtn.Text = "−"
-		contentFrame.Visible = true
-		divider.Visible = true
-
-		TweenService:Create(mainFrame, TweenInfo.new(
-			0.3,
-			Enum.EasingStyle.Quad,
-			Enum.EasingDirection.Out
-		), {
-			Size = fullSize
-		}):Play()
-	end
+	TweenService:Create(mainFrame, TweenInfo.new(0.2), {
+		Size = minimized and miniSize or fullSize
+	}):Play()
 end)
 
--- Dragging: mouse and touch
+-- Drag with mouse or touch
 local dragging = false
+local dragInput
 local dragStart
-local startPos
-local activeInput
+local startPosition
 
 topBar.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1
 		or input.UserInputType == Enum.UserInputType.Touch then
-
 		dragging = true
 		dragStart = input.Position
-		startPos = mainFrame.Position
-		activeInput = input
+		startPosition = mainFrame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+topBar.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+		or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
 	end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-	if dragging and (
-		input.UserInputType == Enum.UserInputType.MouseMovement
-		or input.UserInputType == Enum.UserInputType.Touch
-	) then
-		if activeInput and activeInput.UserInputType == Enum.UserInputType.Touch
-			and input ~= activeInput then
-			return
-		end
-
+	if dragging and input == dragInput then
 		local delta = input.Position - dragStart
 
 		mainFrame.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
+			startPosition.X.Scale,
+			startPosition.X.Offset + delta.X,
+			startPosition.Y.Scale,
+			startPosition.Y.Offset + delta.Y
 		)
 	end
 end)
 
-UserInputService.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1
-		or input == activeInput then
-		dragging = false
-		activeInput = nil
-	end
-end)
-
--- Opening animation
-TweenService:Create(mainFrame, TweenInfo.new(
-	0.5,
-	Enum.EasingStyle.Back,
-	Enum.EasingDirection.Out
-), {
-	Size = fullSize
-}):Play()
-
--- Shimmer
-local shimmerFrame = Instance.new("Frame")
-shimmerFrame.Size = UDim2.new(0, 60, 1, 0)
-shimmerFrame.Position = UDim2.new(-0.3, 0, 0, 0)
-shimmerFrame.BackgroundColor3 = Color3.new(1, 1, 1)
-shimmerFrame.BackgroundTransparency = 0.92
-shimmerFrame.BorderSizePixel = 0
-shimmerFrame.ZIndex = 120
-shimmerFrame.Parent = mainFrame
-
-local shimCorner = Instance.new("UICorner")
-shimCorner.CornerRadius = UDim.new(0, 18)
-shimCorner.Parent = shimmerFrame
-
-local shimGrad = Instance.new("UIGradient")
-shimGrad.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.new(0, 0, 0)),
-	ColorSequenceKeypoint.new(0.5, Color3.new(1, 1, 1)),
-	ColorSequenceKeypoint.new(1, Color3.new(0, 0, 0))
-})
-shimGrad.Rotation = 15
-shimGrad.Parent = shimmerFrame
-
-local function playShimmer()
+-- Border animation
+local connection
+connection = RunService.Heartbeat:Connect(function()
 	if not screenGui.Parent then
+		connection:Disconnect()
 		return
 	end
 
-	shimmerFrame.Position = UDim2.new(-0.3, 0, 0, 0)
-
-	local tween = TweenService:Create(
-		shimmerFrame,
-		TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
-		{Position = UDim2.new(1.3, 0, 0, 0)}
-	)
-
-	tween:Play()
-
-	tween.Completed:Connect(function()
-		if screenGui.Parent then
-			task.delay(4, playShimmer)
-		end
-	end)
-end
-
-task.delay(1, playShimmer)
-
--- Pulsing border
-local heartbeatConnection
-
-heartbeatConnection = RunService.Heartbeat:Connect(function()
-	if not screenGui.Parent then
-		heartbeatConnection:Disconnect()
-		return
-	end
-
-	local alpha = (math.sin(os.clock() * 1.5) + 1) / 2
-	mainStroke.Transparency = 0.2 + alpha * 0.4
+	mainStroke.Transparency =
+		0.25 + ((math.sin(os.clock() * 1.5) + 1) / 2) * 0.35
 end)
+
+print("[ThunderModz] GUI loaded")
